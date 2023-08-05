@@ -43,7 +43,7 @@ pipeline {
             deleteDir()
         }
         success {
-            echo 'Budgfgbnm m ,m, ingmnmhmmhmhjld '
+            echo 'Budgfgbnmhmhjld '
         } 
         failure {
             echo 'Blded!'
