@@ -1,5 +1,5 @@
 sonar.host.url=https://sonarqube.ektechsoftwaresolution.com/
-sonar.projectKey=weahterapp
+sonar.projectKey=my:projectkey
 sonar.projectName=s4-weahterapp
 sonar.projectVersion=1.0.0
 sonar.sources=.
