@@ -150,7 +150,7 @@ pipeline {
         }
 
 
-        stage('push auth ') {
+        stage('push weather ') {
             steps {
                 script {
                     // Log in to Docker Hub
