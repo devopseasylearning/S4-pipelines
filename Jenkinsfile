@@ -167,36 +167,53 @@ pipeline {
                 script {
 
                     sh '''
-                    cd ${WORKSPACE}/charts/weatherapp-auth
-cat << EOF > dev-values.yaml
+git clone git@github.com:devopseasylearning/S4-projects-charts.git
+cd S4-projects-charts
+
+
+cat << EOF > charts/weatherapp-auth/dev-values.yaml
 image:
   repository: devopseasylearning/s4-pipeline-auth
   tag: ${BUILD_NUMBER}
 EOF
 
-cd ${WORKSPACE}/charts/weatherapp-mysql
-cat << EOF > dev-values.yaml
+
+
+
+cat << EOF > charts/weatherapp-mysql/dev-values.yaml
 image:
   repository: devopseasylearning/s4-pipeline-db
   tag: ${BUILD_NUMBER}
 EOF
 
-cd ${WORKSPACE}/charts/weatherapp-ui
-cat << EOF > dev-values.yaml
+
+
+
+
+cat << EOF > charts/weatherapp-ui/dev-values.yaml
 image:
   repository: devopseasylearning/s4-pipeline-ui
   tag: ${BUILD_NUMBER}
 EOF
 
 
-cd ${WORKSPACE}/charts/weatherapp-weather
-cat << EOF > dev-values.yaml
+
+
+
+
+cat << EOF > charts/weatherapp-weather/dev-values.yaml
 image:
   repository: devopseasylearning/s4-pipeline-weather
   tag: ${BUILD_NUMBER}
 EOF
 
 
+git config --global user.name "devopseasylearning"
+git config --global user.email "info@devopseasylearning.com"
+
+git add -A 
+git commit -m "change from jenkins CI"
+git push 
                     '''
                 }
             }
