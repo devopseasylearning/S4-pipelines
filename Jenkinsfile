@@ -162,6 +162,47 @@ pipeline {
         }
 
 
+        stage('Update  charts') {
+            steps {
+                script {
+
+                    sh '''
+                    cd ${WORKSPACE}/charts/weatherapp-auth
+cat << EOF > dev-values.yaml
+image:
+  repository: devopseasylearning/s4-pipeline-auth
+  tag: ${BUILD_NUMBER}
+EOF
+
+cd ${WORKSPACE}/charts/weatherapp-mysql
+cat << EOF > dev-values.yaml
+image:
+  repository: devopseasylearning/s4-pipeline-db
+  tag: ${BUILD_NUMBER}
+EOF
+
+cd ${WORKSPACE}/charts/weatherapp-ui
+cat << EOF > dev-values.yaml
+image:
+  repository: devopseasylearning/s4-pipeline-ui
+  tag: ${BUILD_NUMBER}
+EOF
+
+
+cd ${WORKSPACE}/charts/weatherapp-weather
+cat << EOF > dev-values.yaml
+image:
+  repository: devopseasylearning/s4-pipeline-weather
+  tag: ${BUILD_NUMBER}
+EOF
+
+
+                    '''
+                }
+            }
+        }
+
+
 }
 
    post {

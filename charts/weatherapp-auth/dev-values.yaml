@@ -1,0 +1,3 @@
+image:
+  repository: devopseasylearning/s4-pipeline-auth
+  tag: ${BUILD_NUMBER}
