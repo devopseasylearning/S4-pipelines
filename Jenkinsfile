@@ -4,7 +4,7 @@ pipeline {
 
     stages {
 
-       stage('Build') {
+       stage('Builddddd') {
             steps {
                 // Build the code using Maven
                 sh '''
