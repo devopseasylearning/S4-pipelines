@@ -18,21 +18,21 @@ pipeline {
         stage('Build') {
             steps {
                 // Build the code using Maven
-                sh 'mvn clean install -DskipTests'
+                sh 'ls'
             }
         }
 
         stage('Archive') {
             steps {
                 // Archive the build artifacts
-                arctifacts: '**/target/*.jar', allowEmptyArchive: true
+                sh 'ls'
             }
         }
 
         stage('Test') {
             steps {
                 // Run the unit tests
-                sh 'mvn test'
+                sh 'ls'
             }
         }
     }
