@@ -30,18 +30,5 @@ pipeline {
         }
 
 
-
-
-    post {
-        always {
-            // Cleanup a
-            deleteDir()
-        }
-        success {
-            echo 'Budgfgbnmhmhjld '
-        } 
-        failure {
-            echo 'Blded!'
-        }
-    }
+}
 }
