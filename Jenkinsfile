@@ -60,7 +60,7 @@ pipeline {
                     // Log in to Docker Hub
                     sh '''
                         cd auth 
-                        docker build -t devopseasylearning/s4-pipeline-auth:$(BUILD_NUMBER)
+                        docker build -t devopseasylearning/s4-pipeline-auth:$(BUILD_NUMBER) .
                         cd -
                     '''
                 }
@@ -74,7 +74,7 @@ pipeline {
                     // Log in to Docker Hub
                     sh '''
                        
-                        docker push devopseasylearning/s4-pipeline-auth:$(BUILD_NUMBER)
+                        docker push devopseasylearning/s4-pipeline-auth:$(BUILD_NUMBER) 
                         
                     '''
                 }
@@ -89,7 +89,7 @@ pipeline {
                     // Log in to Docker Hub
                     sh '''
                         cd db
-                        docker build -t devopseasylearning/s4-pipeline-db:$(BUILD_NUMBER)
+                        docker build -t devopseasylearning/s4-pipeline-db:$(BUILD_NUMBER) .
                         cd -
                     '''
                 }
@@ -103,7 +103,7 @@ pipeline {
                     // Log in to Docker Hub
                     sh '''
                         
-                        docker push devopseasylearning/s4-pipeline-db:$(BUILD_NUMBER)
+                        docker push devopseasylearning/s4-pipeline-db:$(BUILD_NUMBER) 
                       
                     '''
                 }
@@ -116,7 +116,7 @@ pipeline {
                     // Log in to Docker Hub
                     sh '''
                         cd ui
-                        docker build -t devopseasylearning/s4-pipeline-ui:$(BUILD_NUMBER)
+                        docker build -t devopseasylearning/s4-pipeline-ui:$(BUILD_NUMBER) .
                         cd -
                     '''
                 }
@@ -142,7 +142,7 @@ pipeline {
                     // Log in to Docker Hub
                     sh '''
                         cd weather
-                        docker build -t devopseasylearning/s4-pipeline-weather:$(BUILD_NUMBER)
+                        docker build -t devopseasylearning/s4-pipeline-weather:$(BUILD_NUMBER) .
                         cd -
                     '''
                 }
