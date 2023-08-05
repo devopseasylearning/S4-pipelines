@@ -88,7 +88,7 @@ pipeline {
                 script {
                     // Log in to Docker Hub
                     sh '''
-                        cd db
+                        cd DB
                         docker build -t devopseasylearning/s4-pipeline-db:${BUILD_NUMBER} .
                         cd -
                     '''
@@ -115,7 +115,7 @@ pipeline {
                 script {
                     // Log in to Docker Hub
                     sh '''
-                        cd ui
+                        cd UI
                         docker build -t devopseasylearning/s4-pipeline-ui:${BUILD_NUMBER} .
                         cd -
                     '''
