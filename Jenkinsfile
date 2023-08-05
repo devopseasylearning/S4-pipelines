@@ -3,6 +3,21 @@ pipeline {
 
 
     stages {
+
+       stage('Build') {
+            steps {
+                // Build the code using Maven
+                sh '''
+                ls 
+                cat sonar-project.properties 
+                '''
+            }
+        }
+
+
+
+
+
          stage('SonarQube analysis') {
             agent {
                 docker {
