@@ -43,7 +43,7 @@ pipeline {
             deleteDir()
         }
         success {
-            echo 'Build was successful!'
+            echo 'Build sful!'
         }
         failure {
             echo 'Blded!'
