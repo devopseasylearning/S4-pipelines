@@ -6,22 +6,11 @@ pipeline {
         timeout (time: 60, unit: 'MINUTES')
         timestamps()
       }
+    environment {
+        DOCKERHUB_CREDS = credentials('dockerhub-creds') 
+    }
 
     stages {
-
-       stage('Builddddd') {
-            steps {
-                // Build the code using Maven
-                sh '''
-                ls 
-                cat sonar-project.properties 
-                '''
-            }
-        }
-
-
-
-
 
          stage('SonarQube analysis') {
             agent {
@@ -40,6 +29,19 @@ pipeline {
                 }
             }
         }
+
+        stage('Docker Login') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                        echo "${DOCKERHUB_CREDS_PSW}" | docker login --username "${DOCKERHUB_CREDS_USR}" --password-stdin
+                    '''
+                }
+            }
+        }
+
+
 
 
         stage('Build') {
