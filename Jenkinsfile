@@ -39,7 +39,7 @@ pipeline {
 
     post {
         always {
-            // Cleanup after the build
+            // Cleanup a
             deleteDir()
         }
         success {
