@@ -1,6 +1,6 @@
 sonar.host.url=https://sonarqube.ektechsoftwaresolution.com/
-sonar.projectKey=my:projectkey
-sonar.projectName=s4-weahterapp
+sonar.projectKey=s3-Stormer
+sonar.projectName=s3-Stormer
 sonar.projectVersion=1.0.0
 sonar.sources=.
 qualitygate.wait=true 
