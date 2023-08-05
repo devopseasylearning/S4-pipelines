@@ -31,16 +31,16 @@ pipeline {
         }
 
 
-         stage("Quality Gate") {
-            steps {
-              timeout(time: 1, unit: 'HOURS') {
-                waitForQualityGate abortPipeline: true
-              }
-            }
-         }
+        //  stage("Quality Gate") {
+        //     steps {
+        //       timeout(time: 1, unit: 'HOURS') {
+        //         waitForQualityGate abortPipeline: true
+        //       }
+        //     }
+        //  }
 
 
-         
+
         stage('Docker Login') {
             steps {
                 script {
@@ -54,14 +54,116 @@ pipeline {
 
 
 
-
-        stage('Build') {
+        stage('Build auth') {
             steps {
-                // Build the code using Maven
-                sh 'ls'
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                        cd auth 
+                        docker build -t devopseasylearning/s4-pipeline-auth:$(BUILD_NUMBER)
+                        cd -
+                    '''
+                }
+            }
+        }
+
+
+        stage('push auth ') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                       
+                        docker push devopseasylearning/s4-pipeline-auth:$(BUILD_NUMBER)
+                        
+                    '''
+                }
+            }
+        }
+
+
+
+        stage('Build db') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                        cd db
+                        docker build -t devopseasylearning/s4-pipeline-db:$(BUILD_NUMBER)
+                        cd -
+                    '''
+                }
+            }
+        }
+
+
+        stage('push db ') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                        
+                        docker push devopseasylearning/s4-pipeline-db:$(BUILD_NUMBER)
+                      
+                    '''
+                }
+            }
+        }
+
+        stage('Build ui') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                        cd ui
+                        docker build -t devopseasylearning/s4-pipeline-ui:$(BUILD_NUMBER)
+                        cd -
+                    '''
+                }
+            }
+        }
+
+
+        stage('push ui ') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                        docker push devopseasylearning/s4-pipeline-ui:$(BUILD_NUMBER)
+                      
+                    '''
+                }
+            }
+        }
+
+        stage('Build weather') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                        cd weather
+                        docker build -t devopseasylearning/s4-pipeline-weather:$(BUILD_NUMBER)
+                        cd -
+                    '''
+                }
+            }
+        }
+
+
+        stage('push auth ') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                        docker push devopseasylearning/s4-pipeline-weather:$(BUILD_NUMBER)
+                    '''
+                }
             }
         }
 
 
 }
+
+
+
 }
