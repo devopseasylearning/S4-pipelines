@@ -17,16 +17,20 @@ pipeline {
                 script {
                     properties([
                         parameters([
-                        
+
                              string(name: 'WARNTIME',
                              defaultValue: '2',
                             description: '''Warning time (in minutes) before starting upgrade'''),
-                        ]),
-                    string(
-                        defaultValue: 'develop',
-                        name: 'Please_leave_this_section_as_it_is',
-                        trim: true
+
+                        string(
+                             defaultValue: 'develop',
+                             name: 'Please_leave_this_section_as_it_is',
+                             trim: true
                             ),
+
+
+                        ]),
+
                     ])
                 }
             }
