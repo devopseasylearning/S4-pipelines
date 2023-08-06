@@ -12,6 +12,32 @@ pipeline {
 
     stages {
 
+        stage('Setup parameters') {
+            steps {
+                script {
+                    properties([
+                        parameters([
+                        
+                             string(name: 'WARNTIME',
+                             defaultValue: '2',
+                            description: '''Warning time (in minutes) before starting upgrade'''),
+                        ])
+                    ])
+                }
+            }
+        }
+
+        
+       stage('warning') {
+      steps {
+        script {
+            notifyUpgrade(currentBuild.currentResult, "WARNING")
+            sleep(time:env.WARNTIME, unit:"MINUTES")
+        }
+      }
+    }
+
+
          stage('SonarQube analysis') {
             agent {
                 docker {
@@ -225,25 +251,51 @@ git push
 
 }
 
-   post {
-   
-   success {
-      slackSend (channel: '#development-alerts', color: 'good', message: "SUCCESSFUL: Application S4-PIPELINE  Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+post {
+    always {
+      script {
+        notifyUpgrade(currentBuild.currentResult, "POST")
+      }
     }
+    
+  }
 
- 
-    unstable {
-      slackSend (channel: '#development-alerts', color: 'warning', message: "UNSTABLE: Application S4-PIPELINE  Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
-    }
 
-    failure {
-      slackSend (channel: '#development-alerts', color: '#FF0000', message: "FAILURE: Application S4-PIPELINE Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
-    }
-   
-    cleanup {
-      deleteDir()
-    }
+
 }
 
 
+
+
+
+
+def notifyUpgrade(String buildResult, String whereAt) {
+  if (Please_leave_this_section_as_it_is == 'origin/develop') {
+    channel = 'development-alerts'
+  } else {
+    channel = 'development-alerts'
+  }
+  if (buildResult == "SUCCESS") {
+    switch(whereAt) {
+      case 'WARNING':
+        slackSend(channel: channel,
+                color: "#439FE0",
+                message: "s4-weather-app: Upgrade starting in ${env.WARNTIME} minutes @ ${env.BUILD_URL}  Application s4-weather-app")
+        break
+    case 'STARTING':
+      slackSend(channel: channel,
+                color: "good",
+                message: "s4-weather-app: Starting upgrade @ ${env.BUILD_URL} Application s4-weather-app")
+      break
+    default:
+        slackSend(channel: channel,
+                color: "good",
+                message: "s4-weather-app: Upgrade completed successfully @ ${env.BUILD_URL}  Application s4-weather-app")
+        break
+    }
+  } else {
+    slackSend(channel: channel,
+              color: "danger",
+              message: "s4-weather-app: Upgrade was not successful. Please investigate it immediately.  @ ${env.BUILD_URL}  Application s4-weather-app")
+  }
 }
