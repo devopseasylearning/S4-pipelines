@@ -17,6 +17,10 @@ pipeline {
                 script {
                     properties([
                         parameters([
+                            choice(
+                                choices: ['DEV', 'QA', 'PREPROD'], 
+                                name: 'ENVIRONMENT'
+                            ),
 
                              string(name: 'WARNTIME',
                              defaultValue: '1',
@@ -214,9 +218,6 @@ image:
   repository: devopseasylearning/s4-pipeline-db
   tag: ${BUILD_NUMBER}
 EOF
-
-
-
 
 
 cat << EOF > charts/weatherapp-ui/dev-values.yaml
