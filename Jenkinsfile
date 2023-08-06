@@ -169,7 +169,7 @@ pipeline {
                     sh '''
 git clone git@github.com:devopseasylearning/S4-projects-charts.git
 cd S4-projects-charts
-
+ls
 
 cat << EOF > charts/weatherapp-auth/dev-values.yaml
 image:
