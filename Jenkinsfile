@@ -170,7 +170,7 @@ pipeline {
 git clone git@github.com:devopseasylearning/S4-projects-charts.git
 cd S4-projects-charts
 ls
-
+pwd
 cat << EOF > charts/weatherapp-auth/dev-values.yaml
 image:
   repository: devopseasylearning/s4-pipeline-auth
