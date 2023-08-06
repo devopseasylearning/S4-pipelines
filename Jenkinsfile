@@ -191,7 +191,13 @@ pipeline {
         }
 
 
-        stage('Update  charts') {
+   stage('Update DEV  charts') {
+      when{  
+          expression {
+            env.ENVIRONMENT == 'DEV' }
+          
+            }
+      
             steps {
                 script {
 
@@ -208,28 +214,17 @@ image:
 EOF
 
 
-
-
-
-
-
 cat << EOF > charts/weatherapp-mysql/dev-values.yaml
 image:
   repository: devopseasylearning/s4-pipeline-db
   tag: ${BUILD_NUMBER}
 EOF
 
-
 cat << EOF > charts/weatherapp-ui/dev-values.yaml
 image:
   repository: devopseasylearning/s4-pipeline-ui
   tag: ${BUILD_NUMBER}
 EOF
-
-
-
-
-
 
 cat << EOF > charts/weatherapp-weather/dev-values.yaml
 image:
@@ -249,6 +244,116 @@ git push
             }
         }
 
+
+
+
+
+   stage('Update QA  charts') {
+      when{  
+          expression {
+            env.ENVIRONMENT == 'QA' }
+          
+            }
+      
+            steps {
+                script {
+
+                    sh '''
+rm -rf S4-projects-charts || true
+git clone git@github.com:devopseasylearning/S4-projects-charts.git
+cd S4-projects-charts
+
+cat << EOF > charts/weatherapp-auth/qa-values.yaml
+image:
+  repository: devopseasylearning/s4-pipeline-auth
+  tag: ${BUILD_NUMBER}
+EOF
+
+
+cat << EOF > charts/weatherapp-mysql/qa-values.yaml
+image:
+  repository: devopseasylearning/s4-pipeline-db
+  tag: ${BUILD_NUMBER}
+EOF
+
+cat << EOF > charts/weatherapp-ui/qa-values.yaml
+image:
+  repository: devopseasylearning/s4-pipeline-ui
+  tag: ${BUILD_NUMBER}
+EOF
+
+cat << EOF > charts/weatherapp-weather/qa-values.yaml
+image:
+  repository: devopseasylearning/s4-pipeline-weather
+  tag: ${BUILD_NUMBER}
+EOF
+
+
+git config --global user.name "devopseasylearning"
+git config --global user.email "info@devopseasylearning.com"
+
+git add -A 
+git commit -m "change from jenkins CI"
+git push 
+                    '''
+                }
+            }
+        }
+
+
+
+
+   stage('Update QA  charts') {
+      when{  
+          expression {
+            env.ENVIRONMENT == 'PREPROD' }
+          
+            }
+      
+            steps {
+                script {
+
+                    sh '''
+rm -rf S4-projects-charts || true
+git clone git@github.com:devopseasylearning/S4-projects-charts.git
+cd S4-projects-charts
+
+cat << EOF > charts/weatherapp-auth/preprod-values.yaml
+image:
+  repository: devopseasylearning/s4-pipeline-auth
+  tag: ${BUILD_NUMBER}
+EOF
+
+
+cat << EOF > charts/weatherapp-mysql/preprod-values.yaml
+image:
+  repository: devopseasylearning/s4-pipeline-db
+  tag: ${BUILD_NUMBER}
+EOF
+
+cat << EOF > charts/weatherapp-ui/preprod-values.yaml
+image:
+  repository: devopseasylearning/s4-pipeline-ui
+  tag: ${BUILD_NUMBER}
+EOF
+
+cat << EOF > charts/weatherapp-weather/preprod-values.yaml
+image:
+  repository: devopseasylearning/s4-pipeline-weather
+  tag: ${BUILD_NUMBER}
+EOF
+
+
+git config --global user.name "devopseasylearning"
+git config --global user.email "info@devopseasylearning.com"
+
+git add -A 
+git commit -m "change from jenkins CI"
+git push 
+                    '''
+                }
+            }
+        }
 
         stage('wait for argocd') {
             steps {
