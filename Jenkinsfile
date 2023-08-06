@@ -24,28 +24,25 @@ pipeline {
                         string(
                              defaultValue: '50',
                              name: 'auth_tag',
-                             description: '''Please enter auth image tage to be used'''),
-                             trim: true
+                             description: '''Please enter auth image tage to be used''',
                             ),
+
                         string(
                              defaultValue: '50',
                              name: 'db_tag',
-                             description: '''Please enter db  image tage to be used'''),
-                             trim: true
+                             description: '''Please enter db  image tage to be used''',
                             ),
 
                         string(
                              defaultValue: '50',
                              name: 'ui_tag',
-                             description: '''Please enter ui image tage to be used'''),
-                             trim: true
+                             description: '''Please enter ui image tage to be used''',
                             ),
-                            
+
                         string(
                              defaultValue: '50',
                              name: 'weather_tag',
-                             description: '''Please enter weather  image tage to be used'''),
-                             trim: true
+                             description: '''Please enter weather  image tage to be used''',
                             ),
 
 
@@ -56,7 +53,6 @@ pipeline {
                         string(
                              defaultValue: 'develop',
                              name: 'Please_leave_this_section_as_it_is',
-                             trim: true
                             ),
 
 
