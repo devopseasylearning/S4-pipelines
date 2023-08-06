@@ -21,6 +21,33 @@ pipeline {
                                 choices: ['DEV', 'QA', 'PREPROD'], 
                                 name: 'ENVIRONMENT'
                             ),
+                        string(
+                             defaultValue: '50',
+                             name: 'auth_tag',
+                             description: '''Please enter auth image tage to be used'''),
+                             trim: true
+                            ),
+                        string(
+                             defaultValue: '50',
+                             name: 'db_tag',
+                             description: '''Please enter db  image tage to be used'''),
+                             trim: true
+                            ),
+
+                        string(
+                             defaultValue: '50',
+                             name: 'ui_tag',
+                             description: '''Please enter ui image tage to be used'''),
+                             trim: true
+                            ),
+                            
+                        string(
+                             defaultValue: '50',
+                             name: 'weather_tag',
+                             description: '''Please enter weather  image tage to be used'''),
+                             trim: true
+                            ),
+
 
                              string(name: 'WARNTIME',
                              defaultValue: '0',
