@@ -88,6 +88,10 @@ pipeline {
 
 
         stage('Build auth') {
+           when{  
+            expression {
+              env.ENVIRONMENT == 'DEV' }
+              }
             steps {
                 script {
                     // Log in to Docker Hub
@@ -102,6 +106,10 @@ pipeline {
 
 
         stage('push auth ') {
+           when{  
+            expression {
+              env.ENVIRONMENT == 'DEV' }
+              }
             steps {
                 script {
                     // Log in to Docker Hub
@@ -117,6 +125,10 @@ pipeline {
 
 
         stage('Build db') {
+           when{  
+            expression {
+              env.ENVIRONMENT == 'DEV' }
+              }
             steps {
                 script {
                     // Log in to Docker Hub
@@ -131,6 +143,10 @@ pipeline {
 
 
         stage('push db ') {
+           when{  
+            expression {
+              env.ENVIRONMENT == 'DEV' }
+              }
             steps {
                 script {
                     // Log in to Docker Hub
@@ -144,6 +160,10 @@ pipeline {
         }
 
         stage('Build ui') {
+           when{  
+            expression {
+              env.ENVIRONMENT == 'DEV' }
+              }
             steps {
                 script {
                     // Log in to Docker Hub
@@ -158,6 +178,10 @@ pipeline {
 
 
         stage('push ui ') {
+           when{  
+            expression {
+              env.ENVIRONMENT == 'DEV' }
+              }
             steps {
                 script {
                     // Log in to Docker Hub
@@ -170,6 +194,10 @@ pipeline {
         }
 
         stage('Build weather') {
+           when{  
+            expression {
+              env.ENVIRONMENT == 'DEV' }
+              }
             steps {
                 script {
                     // Log in to Docker Hub
@@ -184,6 +212,10 @@ pipeline {
 
 
         stage('push weather ') {
+           when{  
+            expression {
+              env.ENVIRONMENT == 'DEV' }
+              }
             steps {
                 script {
                     // Log in to Docker Hub
