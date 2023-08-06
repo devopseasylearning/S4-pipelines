@@ -250,6 +250,46 @@ pipeline {
         }
 
 
+
+        stage('QA: pull images ') {
+           when{  
+            expression {
+              env.ENVIRONMENT == 'QA' }
+              }
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                        docker pull devopseasylearning/s4-pipeline-auth:$auth_tag 
+                        docker pull devopseasylearning/s4-pipeline-db:$db_tag 
+                        docker pull devopseasylearning/s4-pipeline-ui:$ui_tag 
+                        docker pull devopseasylearning/s4-pipeline-weather:$weather_tag 
+                    '''
+                }
+            }
+        }
+
+
+        stage('QA: tag  images ') {
+           when{  
+            expression {
+              env.ENVIRONMENT == 'QA' }
+              }
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                        docker tag  devopseasylearning/s4-pipeline-auth:$auth_tag devopseasylearning/s4-pipeline-auth:qa-$auth_tag 
+                        docker tag  devopseasylearning/s4-pipeline-db:$db_tag     devopseasylearning/s4-pipeline-db:qa-$db_tag 
+                        docker tag  devopseasylearning/s4-pipeline-ui:$ui_tag     devopseasylearning/s4-pipeline-ui:qa-$ui_tag 
+                        docker tag  devopseasylearning/s4-pipeline-weather:$weather_tag devopseasylearning/s4-pipeline-weather:qa-$weather_tag 
+                    '''
+                }
+            }
+        }
+
+
+
    stage('Update DEV  charts') {
       when{  
           expression {
@@ -325,26 +365,26 @@ cd S4-projects-charts
 cat << EOF > charts/weatherapp-auth/qa-values.yaml
 image:
   repository: devopseasylearning/s4-pipeline-auth
-  tag: ${BUILD_NUMBER}
+  tag: qa-$auth_tag
 EOF
 
 
 cat << EOF > charts/weatherapp-mysql/qa-values.yaml
 image:
   repository: devopseasylearning/s4-pipeline-db
-  tag: ${BUILD_NUMBER}
+  tag: qa-$db_tag
 EOF
 
 cat << EOF > charts/weatherapp-ui/qa-values.yaml
 image:
   repository: devopseasylearning/s4-pipeline-ui
-  tag: ${BUILD_NUMBER}
+  tag: qa-$ui_tag
 EOF
 
 cat << EOF > charts/weatherapp-weather/qa-values.yaml
 image:
   repository: devopseasylearning/s4-pipeline-weather
-  tag: ${BUILD_NUMBER}
+  tag: qa-$weather_tag
 EOF
 
 
