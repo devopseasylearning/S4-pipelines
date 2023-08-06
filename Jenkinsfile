@@ -303,7 +303,7 @@ git push
 
 
 
-   stage('Update QA  charts') {
+   stage('Update Preprod  charts') {
       when{  
           expression {
             env.ENVIRONMENT == 'PREPROD' }
