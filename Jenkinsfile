@@ -55,7 +55,6 @@ pipeline {
            when{  
             expression {
               env.ENVIRONMENT == 'DEV' }
-            
               }
             agent {
                 docker {
