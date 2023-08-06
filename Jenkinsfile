@@ -192,6 +192,7 @@ pipeline {
                 script {
 
                     sh '''
+rm -rf S4-projects-charts || true
 git clone git@github.com:devopseasylearning/S4-projects-charts.git
 cd S4-projects-charts
 ls
