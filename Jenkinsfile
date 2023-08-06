@@ -19,7 +19,7 @@ pipeline {
                         parameters([
 
                              string(name: 'WARNTIME',
-                             defaultValue: '2',
+                             defaultValue: '1',
                             description: '''Warning time (in minutes) before starting upgrade'''),
 
                         string(
@@ -243,6 +243,18 @@ git config --global user.email "info@devopseasylearning.com"
 git add -A 
 git commit -m "change from jenkins CI"
 git push 
+                    '''
+                }
+            }
+        }
+
+
+        stage('wait for argocd') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                     sleep 300
                     '''
                 }
             }
