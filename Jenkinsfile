@@ -19,8 +19,7 @@ pipeline {
         stage('Test') {
             steps {
                 // Run tests
-                sh 'mvn test
-                pwd'
+                sh 'mvn test'
             }
         }
     }
