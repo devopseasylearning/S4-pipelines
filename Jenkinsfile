@@ -20,8 +20,8 @@ pipeline {
         stage('Test') {
             steps {
                 // Run tests
-                sh 'mvn test
-                ls'
+                sh 'mvn test'
+                
             }
         }
     }
