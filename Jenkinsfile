@@ -21,9 +21,7 @@ pipeline {
         stage('Test') {
             steps {
                 // Run tests
-                sh 'mvn test
-                ls
-                pwd'
+                sh 'mvn test'
                 
             }
         }
