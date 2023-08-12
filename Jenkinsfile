@@ -70,7 +70,7 @@ pipeline {
        stage('warning') {
           when{  
             expression {
-              return env.BRANCH_NAME == 'develop'
+              env.BRANCH_NAME == 'develop' 
               }
       steps {
         script {
@@ -140,8 +140,7 @@ pipeline {
         stage('push auth ') {
            when{  
             expression {
-              return env.BRANCH_NAME == 'develop'
-              env.ENVIRONMENT == 'DEV' 
+              env.ENVIRONMENT == 'DEV' && env.BRANCH_NAME == 'develop' 
               }
            }
             steps {
@@ -179,8 +178,8 @@ pipeline {
         stage('push db ') {
            when{  
             expression {
-              return env.BRANCH_NAME == 'develop'
-              env.ENVIRONMENT == 'DEV' }
+             
+              env.ENVIRONMENT == 'DEV' && env.BRANCH_NAME == 'develop' }
               }
             steps {
                 script {
@@ -215,7 +214,7 @@ pipeline {
         stage('push ui ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'DEV'  }
+              env.ENVIRONMENT == 'DEV' && env.BRANCH_NAME == 'develop'  }
               }
             steps {
                 script {
@@ -249,7 +248,7 @@ pipeline {
         stage('push weather ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'DEV'  }
+              env.ENVIRONMENT == 'DEV'  && env.BRANCH_NAME == 'develop' }
               }
             steps {
                 script {
@@ -266,7 +265,7 @@ pipeline {
         stage('QA: pull images ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'QA'  }
+              env.ENVIRONMENT == 'QA'  && env.BRANCH_NAME == 'develop' }
               }
             steps {
                 script {
@@ -285,7 +284,7 @@ pipeline {
         stage('QA: tag  images ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'QA'  }
+              env.ENVIRONMENT == 'QA'  && env.BRANCH_NAME == 'develop' }
               }
             steps {
                 script {
@@ -305,7 +304,7 @@ pipeline {
    stage('Update DEV  charts') {
       when{  
           expression {
-            env.ENVIRONMENT == 'DEV'  }
+            env.ENVIRONMENT == 'DEV'  && env.BRANCH_NAME == 'develop' }
           
             }
       
@@ -362,7 +361,7 @@ git push
    stage('Update QA  charts') {
       when{  
           expression {
-            env.ENVIRONMENT == 'QA'  }
+            env.ENVIRONMENT == 'QA'  && env.BRANCH_NAME == 'develop' }
           
             }
       
@@ -417,7 +416,7 @@ git push
    stage('Update Preprod  charts') {
       when{  
           expression {
-            env.ENVIRONMENT == 'PREPROD'  }
+            env.ENVIRONMENT == 'PREPROD'  && env.BRANCH_NAME == 'develop' }
           
             }
       
@@ -470,7 +469,7 @@ git push
    stage('Update prod  charts') {
       when{  
           expression {
-            env.ENVIRONMENT == 'PROD'  }
+            env.ENVIRONMENT == 'PROD' && env.BRANCH_NAME == 'develop'  }
           
             }
       
@@ -520,12 +519,11 @@ git push
         }
  stage('wait for argocd') {
             when {
-                allOf {
-                    branch 'develop'
+
                     expression {
-                        env.ENVIRONMENT == 'DEV' || env.ENVIRONMENT == 'PREPROD' || env.ENVIRONMENT == 'PROD'
+                        env.ENVIRONMENT == 'DEV' || env.ENVIRONMENT == 'PREPROD' || env.ENVIRONMENT == 'PROD' && env.BRANCH_NAME == 'develop' 
                     }
-                }
+              
             }
             steps {
                 script {
