@@ -18,7 +18,7 @@ pipeline {
                     properties([
                         parameters([
                             choice(
-                                choices: ['DEV', 'QA', 'PREPROD', 'PROD'], 
+                                choices: ['DEV', 'QA', 'PREPROD'], 
                                 name: 'ENVIRONMENT'
                             ),
                         string(
@@ -55,6 +55,7 @@ pipeline {
                              name: 'Please_leave_this_section_as_it_is',
                             ),
 
+
                         ]),
 
                     ])
@@ -63,14 +64,7 @@ pipeline {
         }
 
 
-
-
        stage('warning') {
-          when{  
-            expression {
-              env.BRANCH_NAME == 'develop' 
-              }
-          }
       steps {
         script {
             notifyUpgrade(currentBuild.currentResult, "WARNING")
@@ -80,27 +74,27 @@ pipeline {
     }
 
 
-    //      stage('SonarQube analysis') {
-    //        when{  
-    //         expression {
-    //           env.ENVIRONMENT == 'DEV' }
-    //           }
-    //         agent {
-    //             docker {
-    //               image 'sonarsource/sonar-scanner-cli:4.7.0'
-    //             }
-    //            }
-    //            environment {
-    //     CI = 'true'
-    //     //  scannerHome = tool 'Sonar'
-    //     scannerHome='/opt/sonar-scanner'
-    // }
-    //         steps{
-    //             withSonarQubeEnv('Sonar') {
-    //                 sh "${scannerHome}/bin/sonar-scanner"
-    //             }
-    //         }
-    //     }
+         stage('SonarQube analysis') {
+           when{  
+            expression {
+              env.ENVIRONMENT == 'DEV' }
+              }
+            agent {
+                docker {
+                  image 'sonarsource/sonar-scanner-cli:4.7.0'
+                }
+               }
+               environment {
+        CI = 'true'
+        //  scannerHome = tool 'Sonar'
+        scannerHome='/opt/sonar-scanner'
+    }
+            steps{
+                withSonarQubeEnv('Sonar') {
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }
+            }
+        }
 
 
         stage('Docker Login') {
@@ -108,7 +102,6 @@ pipeline {
                 script {
                     // Log in to Docker Hub
                     sh '''
-                    echo $BRANCH_NAME
                         echo "${DOCKERHUB_CREDS_PSW}" | docker login --username "${DOCKERHUB_CREDS_USR}" --password-stdin
                     '''
                 }
@@ -118,7 +111,10 @@ pipeline {
 
 
         stage('Build auth') {
-  
+           when{  
+            expression {
+              env.ENVIRONMENT == 'DEV' }
+              }
             steps {
                 script {
                     // Log in to Docker Hub
@@ -132,14 +128,11 @@ pipeline {
         }
 
 
- 
-
         stage('push auth ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'DEV' && env.BRANCH_NAME != 'develop' 
+              env.ENVIRONMENT == 'DEV' }
               }
-           }
             steps {
                 script {
                     // Log in to Docker Hub
@@ -175,8 +168,7 @@ pipeline {
         stage('push db ') {
            when{  
             expression {
-             
-              env.ENVIRONMENT == 'DEV' && env.BRANCH_NAME == 'develop' }
+              env.ENVIRONMENT == 'DEV' }
               }
             steps {
                 script {
@@ -211,7 +203,7 @@ pipeline {
         stage('push ui ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'DEV' && env.BRANCH_NAME == 'develop'  }
+              env.ENVIRONMENT == 'DEV' }
               }
             steps {
                 script {
@@ -245,7 +237,7 @@ pipeline {
         stage('push weather ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'DEV'  && env.BRANCH_NAME == 'develop' }
+              env.ENVIRONMENT == 'DEV' }
               }
             steps {
                 script {
@@ -262,7 +254,7 @@ pipeline {
         stage('QA: pull images ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'QA'  && env.BRANCH_NAME == 'develop' }
+              env.ENVIRONMENT == 'QA' }
               }
             steps {
                 script {
@@ -281,7 +273,7 @@ pipeline {
         stage('QA: tag  images ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'QA'  && env.BRANCH_NAME == 'develop' }
+              env.ENVIRONMENT == 'QA' }
               }
             steps {
                 script {
@@ -301,7 +293,7 @@ pipeline {
    stage('Update DEV  charts') {
       when{  
           expression {
-            env.ENVIRONMENT == 'DEV'  && env.BRANCH_NAME == 'develop' }
+            env.ENVIRONMENT == 'DEV' }
           
             }
       
@@ -358,7 +350,7 @@ git push
    stage('Update QA  charts') {
       when{  
           expression {
-            env.ENVIRONMENT == 'QA'  && env.BRANCH_NAME == 'develop' }
+            env.ENVIRONMENT == 'QA' }
           
             }
       
@@ -413,7 +405,7 @@ git push
    stage('Update Preprod  charts') {
       when{  
           expression {
-            env.ENVIRONMENT == 'PREPROD'  && env.BRANCH_NAME == 'develop' }
+            env.ENVIRONMENT == 'PREPROD' }
           
             }
       
@@ -462,70 +454,12 @@ git push
             }
         }
 
-
-   stage('Update prod  charts') {
-      when{  
-          expression {
-            env.ENVIRONMENT == 'PROD' && env.BRANCH_NAME == 'develop'  }
-          
-            }
-      
+        stage('wait for argocd') {
             steps {
                 script {
-
+                    // Log in to Docker Hub
                     sh '''
-rm -rf S4-projects-charts || true
-git clone git@github.com:devopseasylearning/S4-projects-charts.git
-cd S4-projects-charts
-
-cat << EOF > charts/weatherapp-auth/prod-values.yaml
-image:
-  repository: devopseasylearning/s4-pipeline-auth
-  tag: ${BUILD_NUMBER}
-EOF
-
-
-cat << EOF > charts/weatherapp-mysql/prod-values.yaml
-image:
-  repository: devopseasylearning/s4-pipeline-db
-  tag: ${BUILD_NUMBER}
-EOF
-
-cat << EOF > charts/weatherapp-ui/prod-values.yaml
-image:
-  repository: devopseasylearning/s4-pipeline-ui
-  tag: ${BUILD_NUMBER}
-EOF
-
-cat << EOF > charts/weatherapp-weather/prod-values.yaml
-image:
-  repository: devopseasylearning/s4-pipeline-weather
-  tag: ${BUILD_NUMBER}
-EOF
-
-
-git config --global user.name "devopseasylearning"
-git config --global user.email "info@devopseasylearning.com"
-
-git add -A 
-git commit -m "change from jenkins CI"
-git push 
-                    '''
-                }
-            }
-        }
- stage('wait for argocd') {
-            when {
-
-                    expression {
-                        env.ENVIRONMENT == 'DEV' || env.ENVIRONMENT == 'PREPROD' || env.ENVIRONMENT == 'PROD' && env.BRANCH_NAME == 'develop' 
-                    }
-              
-            }
-            steps {
-                script {
-                    sh '''
-                     sleep 5
+                     sleep 300
                     '''
                 }
             }
