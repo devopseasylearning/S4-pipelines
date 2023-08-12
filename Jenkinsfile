@@ -517,14 +517,16 @@ git push
             }
         }
  stage('wait for argocd') {
-      when{  
-          expression {
-            env.ENVIRONMENT == 'DEV' ||  env.ENVIRONMENT == 'PREPROD' && env.ENVIRONMENT == 'PROD' ||  env.BRANCH == 'develop' }
-          
+            when {
+                allOf {
+                    branch 'develop'
+                    expression {
+                        env.ENVIRONMENT == 'DEV' || env.ENVIRONMENT == 'PREPROD' || env.ENVIRONMENT == 'PROD'
+                    }
+                }
             }
             steps {
                 script {
-                    // Log in to Docker Hub
                     sh '''
                      sleep 300
                     '''
