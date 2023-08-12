@@ -538,34 +538,13 @@ git push
 }
 
 post {
-        always {
-            echo 'This will always be run.'
-            if (env.BRANCH == 'develop') {
-                script {
-                    notifyUpgrade(currentBuild.currentResult, "POST")
-                }
-            }
-        }
-        success {
-            if (env.BRANCH != 'develop') {
-                slackSend (channel: '#development-alerts', color: 'good', message: "SUCCESSFUL: S4-pipeline Job '${env.JOB} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
-            }
-        }
-        unstable {
-            if (env.BRANCH != 'develop') {
-                slackSend (channel: '#development-alerts', color: 'warning', message: "UNSTABLE: S4-pipeline Job '${env.JOB} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
-            }
-        }
-        failure {
-            if (env.BRANCH != 'develop') {
-                slackSend (channel: '#development-alerts', color: '#FF0000', message: "FAILURE: S4-pipelineJob '${env.JOB} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
-            }
-        }
-        cleanup {
-            deleteDir()
-        }
+    always {
+      script {
+        notifyUpgrade(currentBuild.currentResult, "POST")
+      }
     }
-
+    
+  }
 
 
 
