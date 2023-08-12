@@ -18,7 +18,7 @@ pipeline {
                     properties([
                         parameters([
                             choice(
-                                choices: ['DEV', 'QA', 'PREPROD'], 
+                                choices: ['DEV', 'QA', 'PREPROD', 'PROD'], 
                                 name: 'ENVIRONMENT'
                             ),
                         string(
@@ -54,7 +54,10 @@ pipeline {
                              defaultValue: 'develop',
                              name: 'Please_leave_this_section_as_it_is',
                             ),
-
+                            choice(
+                                choices: ['BRANCH'],     // this is for the default branch restriction
+                                name: 'develop'
+                            ),
 
                         ]),
 
@@ -133,7 +136,7 @@ pipeline {
         stage('push auth ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'DEV'  && branch 'develop'
+              env.ENVIRONMENT == 'DEV' && env.BRANCH == 'develop'
               }
            }
             steps {
@@ -171,7 +174,7 @@ pipeline {
         stage('push db ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'DEV' }
+              env.ENVIRONMENT == 'DEV' && env.BRANCH == 'develop'}
               }
             steps {
                 script {
@@ -206,7 +209,7 @@ pipeline {
         stage('push ui ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'DEV' }
+              env.ENVIRONMENT == 'DEV' && env.BRANCH == 'develop' }
               }
             steps {
                 script {
@@ -240,7 +243,7 @@ pipeline {
         stage('push weather ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'DEV' }
+              env.ENVIRONMENT == 'DEV' && env.BRANCH == 'develop' }
               }
             steps {
                 script {
@@ -257,7 +260,7 @@ pipeline {
         stage('QA: pull images ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'QA' }
+              env.ENVIRONMENT == 'QA' && env.BRANCH == 'develop' }
               }
             steps {
                 script {
@@ -276,7 +279,7 @@ pipeline {
         stage('QA: tag  images ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'QA' }
+              env.ENVIRONMENT == 'QA' && env.BRANCH == 'develop' }
               }
             steps {
                 script {
@@ -296,7 +299,7 @@ pipeline {
    stage('Update DEV  charts') {
       when{  
           expression {
-            env.ENVIRONMENT == 'DEV' }
+            env.ENVIRONMENT == 'DEV' && env.BRANCH == 'develop' }
           
             }
       
@@ -353,7 +356,7 @@ git push
    stage('Update QA  charts') {
       when{  
           expression {
-            env.ENVIRONMENT == 'QA' }
+            env.ENVIRONMENT == 'QA' && env.BRANCH == 'develop' }
           
             }
       
@@ -408,7 +411,7 @@ git push
    stage('Update Preprod  charts') {
       when{  
           expression {
-            env.ENVIRONMENT == 'PREPROD' }
+            env.ENVIRONMENT == 'PREPROD' && env.BRANCH == 'develop' }
           
             }
       
@@ -457,7 +460,64 @@ git push
             }
         }
 
-        stage('wait for argocd') {
+
+   stage('Update prod  charts') {
+      when{  
+          expression {
+            env.ENVIRONMENT == 'PROD' && env.BRANCH == 'develop' }
+          
+            }
+      
+            steps {
+                script {
+
+                    sh '''
+rm -rf S4-projects-charts || true
+git clone git@github.com:devopseasylearning/S4-projects-charts.git
+cd S4-projects-charts
+
+cat << EOF > charts/weatherapp-auth/prod-values.yaml
+image:
+  repository: devopseasylearning/s4-pipeline-auth
+  tag: ${BUILD_NUMBER}
+EOF
+
+
+cat << EOF > charts/weatherapp-mysql/prod-values.yaml
+image:
+  repository: devopseasylearning/s4-pipeline-db
+  tag: ${BUILD_NUMBER}
+EOF
+
+cat << EOF > charts/weatherapp-ui/prod-values.yaml
+image:
+  repository: devopseasylearning/s4-pipeline-ui
+  tag: ${BUILD_NUMBER}
+EOF
+
+cat << EOF > charts/weatherapp-weather/prod-values.yaml
+image:
+  repository: devopseasylearning/s4-pipeline-weather
+  tag: ${BUILD_NUMBER}
+EOF
+
+
+git config --global user.name "devopseasylearning"
+git config --global user.email "info@devopseasylearning.com"
+
+git add -A 
+git commit -m "change from jenkins CI"
+git push 
+                    '''
+                }
+            }
+        }
+ stage('wait for argocd') {
+      when{  
+          expression {
+            env.ENVIRONMENT == 'DEV' ||  env.ENVIRONMENT == 'PREPROD' && env.ENVIRONMENT == 'PROD' && env.BRANCH == 'develop' }
+          
+            }
             steps {
                 script {
                     // Log in to Docker Hub
