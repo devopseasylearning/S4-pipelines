@@ -140,7 +140,8 @@ pipeline {
         stage('push auth ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'DEV' && ${env.GIT_BRANCH} == 'develop'
+              return env.BRANCH_NAME == 'develop'
+              env.ENVIRONMENT == 'DEV' 
               }
            }
             steps {
@@ -178,7 +179,8 @@ pipeline {
         stage('push db ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'DEV' && ${env.GIT_BRANCH} == 'develop'}
+              return env.BRANCH_NAME == 'develop'
+              env.ENVIRONMENT == 'DEV' }
               }
             steps {
                 script {
@@ -213,7 +215,7 @@ pipeline {
         stage('push ui ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'DEV' && ${env.GIT_BRANCH} == 'develop' }
+              env.ENVIRONMENT == 'DEV'  }
               }
             steps {
                 script {
@@ -247,7 +249,7 @@ pipeline {
         stage('push weather ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'DEV' && ${env.GIT_BRANCH} == 'develop' }
+              env.ENVIRONMENT == 'DEV'  }
               }
             steps {
                 script {
@@ -264,7 +266,7 @@ pipeline {
         stage('QA: pull images ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'QA' && ${env.GIT_BRANCH} == 'develop' }
+              env.ENVIRONMENT == 'QA'  }
               }
             steps {
                 script {
@@ -283,7 +285,7 @@ pipeline {
         stage('QA: tag  images ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'QA' && ${env.GIT_BRANCH} == 'develop' }
+              env.ENVIRONMENT == 'QA'  }
               }
             steps {
                 script {
@@ -303,7 +305,7 @@ pipeline {
    stage('Update DEV  charts') {
       when{  
           expression {
-            env.ENVIRONMENT == 'DEV' && ${env.GIT_BRANCH} == 'develop' }
+            env.ENVIRONMENT == 'DEV'  }
           
             }
       
@@ -360,7 +362,7 @@ git push
    stage('Update QA  charts') {
       when{  
           expression {
-            env.ENVIRONMENT == 'QA' && ${env.GIT_BRANCH} == 'develop' }
+            env.ENVIRONMENT == 'QA'  }
           
             }
       
@@ -415,7 +417,7 @@ git push
    stage('Update Preprod  charts') {
       when{  
           expression {
-            env.ENVIRONMENT == 'PREPROD' && ${env.GIT_BRANCH} == 'develop' }
+            env.ENVIRONMENT == 'PREPROD'  }
           
             }
       
@@ -468,7 +470,7 @@ git push
    stage('Update prod  charts') {
       when{  
           expression {
-            env.ENVIRONMENT == 'PROD' && ${env.GIT_BRANCH} == 'develop' }
+            env.ENVIRONMENT == 'PROD'  }
           
             }
       
