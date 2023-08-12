@@ -54,13 +54,6 @@ pipeline {
                              defaultValue: 'develop',
                              name: 'Please_leave_this_section_as_it_is',
                             ),
-<<<<<<< HEAD
-=======
-                            choice(
-                                choices: ['BRANCH'],     // this is for the default branch restriction
-                                name: 'develop'
-                            ),
->>>>>>> 69553d84bc361355a26b2afb0ccc674f54ed2b10
 
                         ]),
 
@@ -144,11 +137,7 @@ pipeline {
         stage('push auth ') {
            when{  
             expression {
-<<<<<<< HEAD
               env.ENVIRONMENT == 'DEV' && env.BRANCH_NAME != 'develop' 
-=======
-              env.ENVIRONMENT == 'DEV' && env.BRANCH_NAME == 'develop' 
->>>>>>> 69553d84bc361355a26b2afb0ccc674f54ed2b10
               }
            }
             steps {
