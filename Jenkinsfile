@@ -553,7 +553,7 @@ post {
 
 
 
-}
+
 
 
 def notifyUpgrade(String buildResult, String whereAt) {
