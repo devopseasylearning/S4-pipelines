@@ -68,6 +68,10 @@ pipeline {
 
 
        stage('warning') {
+          when{  
+            expression {
+              env.BRANCH == 'develop' }
+              }
       steps {
         script {
             notifyUpgrade(currentBuild.currentResult, "WARNING")
@@ -515,7 +519,7 @@ git push
  stage('wait for argocd') {
       when{  
           expression {
-            env.ENVIRONMENT == 'DEV' ||  env.ENVIRONMENT == 'PREPROD' && env.ENVIRONMENT == 'PROD' && env.BRANCH == 'develop' }
+            env.ENVIRONMENT == 'DEV' ||  env.ENVIRONMENT == 'PREPROD' && env.ENVIRONMENT == 'PROD' ||  env.BRANCH == 'develop' }
           
             }
             steps {
