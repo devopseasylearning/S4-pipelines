@@ -72,6 +72,7 @@ pipeline {
             expression {
               env.BRANCH_NAME == 'develop' 
               }
+          }
       steps {
         script {
             notifyUpgrade(currentBuild.currentResult, "WARNING")
