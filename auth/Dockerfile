@@ -12,4 +12,5 @@ RUN apk --no-cache add ca-certificates
 COPY --from=builder /go/bin/app /app
 ENTRYPOINT /app
 LABEL Name=auth Version=0.0.1
+
 EXPOSE 8080 80
