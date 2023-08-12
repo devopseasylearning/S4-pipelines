@@ -135,6 +135,7 @@ pipeline {
             expression {
               env.ENVIRONMENT == 'DEV'  && branch 'develop'
               }
+           }
             steps {
                 script {
                     // Log in to Docker Hub
