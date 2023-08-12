@@ -133,7 +133,7 @@ pipeline {
         stage('push auth ') {
            when{  
             expression {
-              env.ENVIRONMENT == 'DEV' } && branch 'develop'
+              env.ENVIRONMENT == 'DEV'  && branch 'develop'
               }
             steps {
                 script {
