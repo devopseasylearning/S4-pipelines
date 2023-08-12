@@ -70,7 +70,7 @@ pipeline {
        stage('warning') {
           when{  
             expression {
-              ${env.GIT_BRANCH} == 'develop' }
+              return env.BRANCH_NAME == 'develop'
               }
       steps {
         script {
