@@ -1,0 +1,175 @@
+pipeline {
+    agent any  // This allows the pipeline to run on any available agent
+
+    stages {
+        stage('Setup parameters') {
+            steps {
+                script {
+                    properties([
+                        parameters([
+
+
+                             string(name: 'WARNTIME',
+                             defaultValue: '0',
+                            description: '''Warning time (in minutes) before starting BACKUP '''),
+
+                        ]),
+
+                    ])
+                }
+            }
+        }
+
+
+       stage('warning') {
+      steps {
+        script {
+            notifyBACKUP (currentBuild.currentResult, "WARNING")
+            sleep(time:env.WARNTIME, unit:"MINUTES")
+        }
+      }
+    }
+
+
+
+
+stage('backup ryann') {
+
+	      steps {
+	        script {
+	          withCredentials([
+	            string(credentialsId: 'ryann_db', variable: 'RYANN_DB_PASSWD'),
+	          ]) {
+
+	            sh '''
+export PGPASSWORD=${RYANN_DB_PASSWD}
+export DB_NAME="ryann"
+export DB_USER="ryann"
+export DB_HOST="52.90.199.138" 
+export DB_PORT="5432"   
+bash backup.sh    
+unset PGPASSWORD
+unset  DB_NAME
+unset  DB_USER
+unset  DB_HOST
+unset  DB_PORT
+	            '''
+	          }
+
+	        }
+
+	      }
+
+	    }
+
+
+stage('backup odilia') {
+
+	      steps {
+	        script {
+	          withCredentials([
+	            string(credentialsId: 'odilia_db', variable: 'ODILIA_DB_PASSWD'),
+	          ]) {
+
+	            sh '''
+export PGPASSWORD=${ODILIA_DB_PASSWD}
+export DB_NAME="odilia"
+export DB_USER="odilia"
+export DB_HOST="44.204.76.157" 
+export DB_PORT="5432"   
+bash backup.sh    
+unset PGPASSWORD
+unset  DB_NAME
+unset  DB_USER
+unset  DB_HOST
+unset  DB_PORT
+	            '''
+	          }
+
+	        }
+
+	      }
+
+	    }
+
+
+stage('backup ephraim') {
+
+	      steps {
+	        script {
+	          withCredentials([
+	            string(credentialsId: 'ephraim_db', variable: 'EPHRAIM_DB_PASSWD'),
+	          ]) {
+
+	            sh '''
+export PGPASSWORD=${EPHRAIM_DB_PASSWD}
+export DB_NAME="ephraim"
+export DB_USER="ephraim"
+export DB_HOST="34.227.158.2" 
+export DB_PORT="5432"   
+bash backup.sh    
+unset PGPASSWORD
+unset  DB_NAME
+unset  DB_USER
+unset  DB_HOST
+unset  DB_PORT
+	            '''
+	          }
+
+	        }
+
+	      }
+
+	    }
+
+
+
+
+
+    }
+
+post {
+    always {
+      script {
+        notifyBACKUP (currentBuild.currentResult, "POST")
+      }
+    }
+    
+  }
+
+}
+
+
+
+
+
+def notifyBACKUP (String buildResult, String whereAt) {
+  if (Please_leave_this_section_as_it_is == 'origin/develop') {
+    channel = 'development-alerts'
+  } else {
+    channel = 'development-alerts'
+  }
+  if (buildResult == "SUCCESS") {
+    switch(whereAt) {
+      case 'WARNING':
+        slackSend(channel: channel,
+                color: "#439FE0",
+                message: "s4-weather-app: BACKUP  starting in ${env.WARNTIME} minutes @ ${env.BUILD_URL} ")
+        break
+    case 'STARTING':
+      slackSend(channel: channel,
+                color: "good",
+                message: "s4-weather-app: Starting BACKUP  @ ${env.BUILD_URL}")
+      break
+    default:
+        slackSend(channel: channel,
+                color: "good",
+                message: "s4-weather-app: BACKUP  completed successfully @ ${env.BUILD_URL} ")
+        break
+    }
+  } else {
+    slackSend(channel: channel,
+              color: "danger",
+              message: "s4-weather-app: BACKUP  was not successful. Please investigate it immediately.  @ ${env.BUILD_URL} ")
+  }
+}
