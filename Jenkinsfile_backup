@@ -1,5 +1,11 @@
 pipeline {
-    agent any  // This allows the pipeline to run on any available agent
+    agent {
+        docker {
+            image 'devopseasylearning/backup:001'
+            args '-u root:root'  // Optionally, run as root user inside the container
+        }
+    }
+
 
     stages {
         stage('Setup parameters') {
