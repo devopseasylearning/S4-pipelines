@@ -106,7 +106,7 @@ pipeline {
         }
 
 
-devopseasylearning/weather-app-ui:${BUILD_NUMBER} 
+
 
         stage('Build ui') {
            when{  
