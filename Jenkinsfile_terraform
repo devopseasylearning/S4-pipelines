@@ -119,7 +119,7 @@ pipeline {
                     sh '''
                         cd $WORKSPACE/TF/weather-app/UI
                         docker build -t devopseasylearning/weather-app-ui:${BUILD_NUMBER} .
-                        devopseasylearning/weather-app-ui:${BUILD_NUMBER} 
+                        docker push devopseasylearning/weather-app-ui:${BUILD_NUMBER} 
                     '''
                 }
             }
