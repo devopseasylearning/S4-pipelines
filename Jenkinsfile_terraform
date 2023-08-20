@@ -196,7 +196,7 @@ pipeline {
                 script {
                     // Log in to Docker Hub
                     sh '''
-                        docker push devopseasylearning/weather-app-weather:${BUILD_NUMBER} .
+                        docker push devopseasylearning/weather-app-weather:${BUILD_NUMBER} 
                     '''
                 }
             }
