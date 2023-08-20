@@ -273,7 +273,19 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
                 }
             }
         }
+        
+   stage('terraform clean' ) {
+      
+            steps {
+                script {
 
+                    sh '''
+                    sudo docker rmi devopseasylearning/builder:latest || true
+                    
+                    '''
+                }
+            }
+        }
 
         stage('build deployment image ') {
             steps {
@@ -288,18 +300,7 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
         }
 
 
-   stage('terraform clean' ) {
-      
-            steps {
-                script {
 
-                    sh '''
-                    sudo docker rmi devopseasylearning/builder:latest || true
-                    
-                    '''
-                }
-            }
-        }
 
     stage('terraform init') {
 
