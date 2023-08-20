@@ -1,6 +1,6 @@
 resource "aws_instance" "example" {
   ami = "ami-03f65b8614a860c29"
-  instance_type = "t2.xlarge"
+  instance_type = "t2.medium"
   subnet_id = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.allow_all.id]
   associate_public_ip_address = true 
