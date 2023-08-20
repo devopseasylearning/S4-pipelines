@@ -66,6 +66,10 @@ pipeline {
 
 
         stage('Build auth') {
+           when{  
+            expression {
+              STATE == 'DEPLOY' }
+              }
             steps {
                 script {
                     // Log in to Docker Hub
@@ -79,7 +83,10 @@ pipeline {
 
 
         stage('push auth ') {
-  
+           when{  
+            expression {
+              STATE == 'DEPLOY' }
+              }
             steps {
                 script {
                     // Log in to Docker Hub
@@ -95,7 +102,10 @@ pipeline {
 
 
         stage('Build db') {
-
+           when{  
+            expression {
+              STATE == 'DEPLOY' }
+              }
             steps {
                 script {
                     // Log in to Docker Hub
@@ -110,6 +120,10 @@ pipeline {
 
 
         stage('push db ') {
+           when{  
+            expression {
+              STATE == 'DEPLOY' }
+              }
             steps {
                 script {
                     // Log in to Docker Hub
@@ -123,6 +137,10 @@ pipeline {
         }
 
         stage('Build ui') {
+           when{  
+            expression {
+              STATE == 'DEPLOY' }
+              }
             steps {
                 script {
                     // Log in to Docker Hub
@@ -136,6 +154,10 @@ pipeline {
 
 
         stage('push ui ') {
+           when{  
+            expression {
+              STATE == 'DEPLOY' }
+              }
             steps {
                 script {
                     // Log in to Docker Hub
@@ -148,6 +170,10 @@ pipeline {
         }
 
         stage('Build weather') {
+           when{  
+            expression {
+              STATE == 'DEPLOY' }
+              }
 
             steps {
                 script {
@@ -162,6 +188,10 @@ pipeline {
 
 
         stage('push weather ') {
+           when{  
+            expression {
+              STATE == 'DEPLOY' }
+              }
             steps {
                 script {
                     // Log in to Docker Hub
@@ -175,6 +205,10 @@ pipeline {
 
 
         stage('construct compose') {
+           when{  
+            expression {
+              STATE == 'DEPLOY' }
+              }
             steps {
                 script {
                     // Log in to Docker Hub
@@ -348,6 +382,10 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
 
 
     stage('terraform apply') {
+      when{  
+            expression {
+              STATE == 'DEPLOY' }
+              }
 
 	      steps {
 	        script {
@@ -374,9 +412,42 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
 	    }
 
 
+    stage('terraform destroy') {
+      when{  
+            expression {
+              STATE == 'DESTROY' }
+              }
 
+	      steps {
+	        script {
+	          withCredentials([
+	            string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+	            string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+	            string(credentialsId: 'passwd', variable: 'PASSWORD')
+	          ]) {
+
+	            sh '''
+                 docker run -it -v $PWD:/a \
+                  -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
+                  -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
+                  -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
+                    bash -c " terrafrom init \
+                    terraform destroy --auto-approve"
+	            '''
+	          }
+
+	        }
+
+	      }
+
+	    }
 
    stage('wait for for readiness') {
+      when{  
+            expression {
+              STATE == 'DEPLOY' }
+              }
+
       
             steps {
                 script {
