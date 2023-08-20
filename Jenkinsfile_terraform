@@ -254,7 +254,7 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
         }
 
 
-   stage(terraform clean ) {
+   stage('terraform clean' ) {
       
             steps {
                 script {
