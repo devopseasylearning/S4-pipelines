@@ -4,7 +4,7 @@ resource "aws_instance" "example" {
   subnet_id = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.allow_all.id]
   associate_public_ip_address = true 
-  availability_zone = "us-west-2a"
+
 
   root_block_device {
     volume_size = 30
