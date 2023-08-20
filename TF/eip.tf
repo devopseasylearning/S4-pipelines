@@ -1,7 +1,12 @@
 resource "aws_eip" "main" {
-  tags = {
-    "Name" = "s4-session-eip"
+    tags = {
+    Name        = local.Name
+    Project     = local.Project
+    Application = local.Application
+    Environment = local.Environment
+    Owner       = local.Owner
   }
+  
 }
 
 resource "aws_eip_association" "eip_assoc" {
