@@ -317,7 +317,7 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
                   -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
                   -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
                   -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
-                    bash -c " terrafrom init"
+                    bash -c " terraform init"
 	            '''
 	          }
 
@@ -344,7 +344,7 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
                   -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
                   -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
                   -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
-                    bash -c " terrafrom validate"
+                    bash -c " terraform validate"
 	            '''
 	          }
 
@@ -370,7 +370,7 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
                   -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
                   -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
                   -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
-                    bash -c " terrafrom plan"
+                    bash -c " terraform plan"
 	            '''
 	          }
 
@@ -401,7 +401,7 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
                   -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
                   -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
                   -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
-                    bash -c " terrafrom init \
+                    bash -c " terraform init \
                     terraform apply --auto-approve"
 	            '''
 	          }
@@ -432,7 +432,7 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
                   -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
                   -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
                   -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
-                    bash -c " terrafrom init \
+                    bash -c " terraform init \
                     terraform destroy --auto-approve"
 	            '''
 	          }
