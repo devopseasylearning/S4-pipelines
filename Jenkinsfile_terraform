@@ -339,6 +339,7 @@ EOF
                 script {
 
                     sh '''
+                    cd TF
                     terraform init
                     
                     '''
@@ -359,6 +360,7 @@ EOF
                 script {
 
                     sh '''
+                    cd TF
                     terraform validate
                     
                     '''
@@ -379,6 +381,7 @@ EOF
                 script {
 
                     sh '''
+                    cd TF
                     ls -l
                     pwd
                     terraform plan
@@ -405,6 +408,7 @@ EOF
                 script {
 
                     sh '''
+                    cd TF
                     terraform init
                     terraform apply --auto-approve
                     
@@ -431,6 +435,7 @@ EOF
                 script {
 
                     sh '''
+                    cd TF
                     terraform init
                     terraform destroy --auto-approve
                     
