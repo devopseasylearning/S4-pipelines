@@ -325,12 +325,6 @@ EOF
 
 
 
-            agent {
-                docker {
-                    image 'devopseasylearning/builder:latest'  
-                    args '-v $WORKSPACE/TF/:/a'  
-                }
-            }
 
 
    stage('terraform init' ) {
