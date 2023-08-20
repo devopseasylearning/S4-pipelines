@@ -76,28 +76,14 @@ pipeline {
                     sh '''
                      cd $WORKSPACE/TF/weather-app/auth
                      docker build -t devopseasylearning/weather-app-auth:${BUILD_NUMBER} .
+                     docker push devopseasylearning/weather-app-auth:${BUILD_NUMBER}
                     '''
                 }
             }
         }
 
 
-        stage('push auth ') {
-           when{  
-            expression {
-              STATE == 'DEPLOY' }
-              }
-            steps {
-                script {
-                    // Log in to Docker Hub
-                    sh '''
-                       
-                    docker push devopseasylearning/weather-app-auth:${BUILD_NUMBER}
-                        
-                    '''
-                }
-            }
-        }
+
 
 
 
@@ -112,6 +98,7 @@ pipeline {
                     sh '''
                         cd $WORKSPACE/TF/weather-app/DB
                         docker build -t devopseasylearning/weather-app-db:${BUILD_NUMBER} .
+                        docker push devopseasylearning/weather-app-db:${BUILD_NUMBER} 
                         
                     '''
                 }
@@ -119,22 +106,7 @@ pipeline {
         }
 
 
-        stage('push db ') {
-           when{  
-            expression {
-              STATE == 'DEPLOY' }
-              }
-            steps {
-                script {
-                    // Log in to Docker Hub
-                    sh '''
-                        
-                        docker push devopseasylearning/weather-app-db:${BUILD_NUMBER}
-                      
-                    '''
-                }
-            }
-        }
+devopseasylearning/weather-app-ui:${BUILD_NUMBER} 
 
         stage('Build ui') {
            when{  
@@ -147,27 +119,13 @@ pipeline {
                     sh '''
                         cd $WORKSPACE/TF/weather-app/UI
                         docker build -t devopseasylearning/weather-app-ui:${BUILD_NUMBER} .
+                        devopseasylearning/weather-app-ui:${BUILD_NUMBER} 
                     '''
                 }
             }
         }
 
 
-        stage('push ui ') {
-           when{  
-            expression {
-              STATE == 'DEPLOY' }
-              }
-            steps {
-                script {
-                    // Log in to Docker Hub
-                    sh '''
-                        docker push devopseasylearning/weather-app-ui:${BUILD_NUMBER}
-                      
-                    '''
-                }
-            }
-        }
 
         stage('Build weather') {
            when{  
@@ -181,26 +139,13 @@ pipeline {
                     sh '''
                         cd $WORKSPACE/TF/weather-app/weather
                         docker build -t devopseasylearning/weather-app-weather:${BUILD_NUMBER} .
+                        docker push devopseasylearning/weather-app-weather:${BUILD_NUMBER}
                     '''
                 }
             }
         }
 
 
-        stage('push weather ') {
-           when{  
-            expression {
-              STATE == 'DEPLOY' }
-              }
-            steps {
-                script {
-                    // Log in to Docker Hub
-                    sh '''
-                        docker push devopseasylearning/weather-app-weather:${BUILD_NUMBER} 
-                    '''
-                }
-            }
-        }
 
 
 
@@ -274,21 +219,6 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
             }
         }
 
-   stage('terraform clean' ) {
-      
-            steps {
-                script {
-
-                    sh '''
-                    sudo docker rmi devopseasylearning/builder:latest || true
-                    
-                    '''
-                }
-            }
-        }
-
-
-
 
     stage('build deployment image') {
 
@@ -301,7 +231,7 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
 	          ]) {
 
 	            sh '''
-
+sudo docker rmi devopseasylearning/builder:latest || true
 cat <<EOF > Dockerfile
    FROM ubuntu:22.04
    RUN  apt update 
@@ -327,28 +257,10 @@ EOF
 
 
 
-   stage('terraform init' ) {
-            agent {
-                docker {
-                    image 'devopseasylearning/builder:latest'  
-                    args '-v $WORKSPACE/TF/:/a'  
-                }
-            }
-      
-            steps {
-                script {
 
-                    sh '''
-                    cd TF
-                    terraform init
-                    
-                    '''
-                }
-            }
-        }
+ 
 
-
-   stage('terraform validate' ) {
+   stage('terraform init & validate' ) {
             agent {
                 docker {
                     image 'devopseasylearning/builder:latest'  
@@ -369,31 +281,8 @@ EOF
         }
 
 
-   stage('terraform plan' ) {
-            agent {
-                docker {
-                    image 'devopseasylearning/builder:latest'  
-                    args '-v $WORKSPACE/TF/:/a'  
-                }
-            }
-      
-            steps {
-                script {
 
-                    sh '''
-                    cd TF
-                    ls -l
-                    pwd
-                    terraform plan
-                    
-                    '''
-                }
-            }
-        }
-
-
-
-   stage('terraform apply' ) {
+   stage('terraform pland & apply' ) {
             agent {
                 docker {
                     image 'devopseasylearning/builder:latest'  
