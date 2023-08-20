@@ -380,6 +380,7 @@ EOF
 
                     sh '''
                     ls -l
+                    pwd
                     terraform plan
                     
                     '''
