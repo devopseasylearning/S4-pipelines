@@ -301,8 +301,8 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
 	          ]) {
 
 	            sh '''
-rm -rf $WORKSPACE/TF/weather-app/Dockerfile
-cat <<EOF > $WORKSPACE/TF/weather-app/Dockerfile
+
+cat <<EOF > Dockerfile
    FROM ubuntu:22.04
    RUN  apt update 
    WORKDIR /a
