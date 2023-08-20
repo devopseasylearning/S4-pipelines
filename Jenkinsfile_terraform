@@ -1,0 +1,442 @@
+pipeline {
+    agent any 
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+        disableConcurrentBuilds()
+        timeout (time: 60, unit: 'MINUTES')
+        timestamps()
+      }
+    environment {
+        DOCKERHUB_CREDS = credentials('dockerhub-creds') 
+    }
+
+    stages {
+
+        stage('Setup parameters') {
+            steps {
+                script {
+                    properties([
+                        parameters([
+                            choice(
+                                choices: ['DEPLOY', 'DESTROY'], 
+                                name: 'STATE'
+                            ),
+
+
+                             string(name: 'WARNTIME',
+                             defaultValue: '0',
+                            description: '''Warning time (in minutes) before starting upgrade'''),
+
+                        string(
+                             defaultValue: 'develop',
+                             name: 'Please_leave_this_section_as_it_is',
+                            ),
+
+
+                        ]),
+
+                    ])
+                }
+            }
+        }
+
+
+       stage('warning') {
+      steps {
+        script {
+            notifyUpgrade(currentBuild.currentResult, "WARNING")
+            sleep(time:env.WARNTIME, unit:"MINUTES")
+        }
+      }
+    }
+
+
+
+        stage('Docker Login') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                        echo "${DOCKERHUB_CREDS_PSW}" | docker login --username "${DOCKERHUB_CREDS_USR}" --password-stdin
+                    '''
+                }
+            }
+        }
+
+
+
+        stage('Build auth') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                     cd $WORKSPACE/TF/weather-app/auth
+                     docker build -t devopseasylearning/weather-app-auth:${BUILD_NUMBER} .
+                    '''
+                }
+            }
+        }
+
+
+        stage('push auth ') {
+  
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                       
+                    docker push devopseasylearning/weather-app-auth:${BUILD_NUMBER}
+                        
+                    '''
+                }
+            }
+        }
+
+
+
+        stage('Build db') {
+
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                        cd $WORKSPACE/TF/weather-app/DB
+                        docker build -t devopseasylearning/weather-app-db:${BUILD_NUMBER} .
+                        
+                    '''
+                }
+            }
+        }
+
+
+        stage('push db ') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                        
+                        docker push devopseasylearning/weather-app-db:${BUILD_NUMBER}
+                      
+                    '''
+                }
+            }
+        }
+
+        stage('Build ui') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                        cd $WORKSPACE/TF/weather-app/UI
+                        docker build -t devopseasylearning/weather-app-ui:${BUILD_NUMBER} .
+                    '''
+                }
+            }
+        }
+
+
+        stage('push ui ') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                        docker push devopseasylearning/weather-app-ui:${BUILD_NUMBER}
+                      
+                    '''
+                }
+            }
+        }
+
+        stage('Build weather') {
+
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                        cd $WORKSPACE/TF/weather-app/weather
+                        docker build -t devopseasylearning/weather-app-weather:${BUILD_NUMBER} .
+                    '''
+                }
+            }
+        }
+
+
+        stage('push weather ') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                        docker push devopseasylearning/weather-app-weather:${BUILD_NUMBER} .
+                    '''
+                }
+            }
+        }
+
+
+
+        stage('construct compose') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+rm -rf $WORKSPACE/TF/weather-app/docker-compose.yaml
+cat <<EOF > $WORKSPACE/TF/weather-app/docker-compose.yaml
+  version: "3.9"
+  services:
+    auth:
+      restart: always
+      image: devopseasylearning/weather-app-auth:${BUILD_NUMBER}
+      depends_on:
+        - db
+      environment:
+        DB_HOST: db
+        DB_PASSWORD: my-secret-pw
+      networks:
+        - app-net
+    ui:
+      restart: always
+      image: devopseasylearning/weather-app-ui:${BUILD_NUMBER}
+      depends_on:
+        - auth
+        - weather
+      environment:
+        AUTH_HOST: auth
+        AUTH_PORT: 8080
+        WEATHER_HOST: weather
+        WEATHER_PORT: 5000
+      ports:
+        - "3000:3000"
+      networks:
+        - app-net
+    weather:
+      restart: always
+      build: devopseasylearning/weather-app-weather:${BUILD_NUMBER}
+      environment:
+        APIKEY: ecbc396f46mshb65cbb1f82cf334p1fcc87jsna5e962a3c542
+      networks:
+        - app-net
+    db:
+      restart: always
+      image: devopseasylearning/weather-app-db:${BUILD_NUMBER}
+      environment:
+        MYSQL_ROOT_PASSWORD: my-secret-pw
+      networks:
+        - app-net
+      volumes:
+        - ./db-data:/var/lib/mysql
+  
+  networks:
+    app-net:
+      driver: bridge
+  volumes:
+    db-data:
+
+EOF
+
+
+cat $WORKSPACE/TF/weather-app/docker-compose.yaml
+                    '''
+                }
+            }
+        }
+
+
+        stage('build deployment image ') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh '''
+                    cd $WORKSPACE/TF/weather-app/
+                    docker build -t devopseasylearning/builder:latest .
+                    '''
+                }
+            }
+        }
+
+
+   stage(terraform clean ) {
+      
+            steps {
+                script {
+
+                    sh '''
+                    sudo docker rmi devopseasylearning/builder:latest || true
+                    
+                    '''
+                }
+            }
+        }
+
+    stage('terraform init') {
+
+	      steps {
+	        script {
+	          withCredentials([
+	            string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+	            string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+	            string(credentialsId: 'passwd', variable: 'PASSWORD')
+	          ]) {
+
+	            sh '''
+                 docker run -it -v $PWD:/a \
+                  -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
+                  -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
+                  -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
+                    bash -c " terrafrom init"
+	            '''
+	          }
+
+	        }
+
+	      }
+
+	    }
+
+
+
+    stage('terraform validate') {
+
+	      steps {
+	        script {
+	          withCredentials([
+	            string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+	            string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+	            string(credentialsId: 'passwd', variable: 'PASSWORD')
+	          ]) {
+
+	            sh '''
+                 docker run -it -v $PWD:/a \
+                  -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
+                  -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
+                  -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
+                    bash -c " terrafrom validate"
+	            '''
+	          }
+
+	        }
+
+	      }
+
+	    }
+
+
+    stage('terraform plan') {
+
+	      steps {
+	        script {
+	          withCredentials([
+	            string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+	            string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+	            string(credentialsId: 'passwd', variable: 'PASSWORD')
+	          ]) {
+
+	            sh '''
+                 docker run -it -v $PWD:/a \
+                  -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
+                  -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
+                  -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
+                    bash -c " terrafrom plan"
+	            '''
+	          }
+
+	        }
+
+	      }
+
+	    }
+
+
+
+    stage('terraform apply') {
+
+	      steps {
+	        script {
+	          withCredentials([
+	            string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+	            string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+	            string(credentialsId: 'passwd', variable: 'PASSWORD')
+	          ]) {
+
+	            sh '''
+                 docker run -it -v $PWD:/a \
+                  -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
+                  -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
+                  -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
+                    bash -c " terrafrom init \
+                    terraform apply --auto-approve"
+	            '''
+	          }
+
+	        }
+
+	      }
+
+	    }
+
+
+
+
+   stage('wait for for readiness') {
+      
+            steps {
+                script {
+
+                    sh '''
+                  sleep 10
+
+                    '''
+                }
+            }
+        }
+
+
+}
+
+post {
+    always {
+      script {
+        notifyUpgrade(currentBuild.currentResult, "POST")
+      }
+    }
+    
+  }
+
+
+
+}
+
+
+
+
+
+
+def notifyUpgrade(String buildResult, String whereAt) {
+  if (Please_leave_this_section_as_it_is == 'origin/develop') {
+    channel = 'development-alerts'
+  } else {
+    channel = 'development-alerts'
+  }
+  if (buildResult == "SUCCESS") {
+    switch(whereAt) {
+      case 'WARNING':
+        slackSend(channel: channel,
+                color: "#439FE0",
+                message: "s4-weather-app: Upgrade starting in ${env.WARNTIME} minutes @ ${env.BUILD_URL}  Application s4-weather-app")
+        break
+    case 'STARTING':
+      slackSend(channel: channel,
+                color: "good",
+                message: "s4-weather-app: Starting upgrade @ ${env.BUILD_URL} Application s4-weather-app")
+      break
+    default:
+        slackSend(channel: channel,
+                color: "good",
+                message: "s4-weather-app: Upgrade completed successfully @ ${env.BUILD_URL}  Application s4-weather-app")
+        break
+    }
+  } else {
+    slackSend(channel: channel,
+              color: "danger",
+              message: "s4-weather-app: Upgrade was not successful. Please investigate it immediately.  @ ${env.BUILD_URL}  Application s4-weather-app")
+  }
+}
