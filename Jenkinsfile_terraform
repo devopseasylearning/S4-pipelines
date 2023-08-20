@@ -273,7 +273,7 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
                 }
             }
         }
-        
+
    stage('terraform clean' ) {
       
             steps {
@@ -313,7 +313,7 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
 	          ]) {
 
 	            sh '''
-                 docker run -it -v $PWD:/a \
+                 docker run -i -v $PWD:/a \
                   -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
                   -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
                   -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
@@ -340,7 +340,7 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
 	          ]) {
 
 	            sh '''
-                 docker run -it -v $PWD:/a \
+                 docker run -i -v $PWD:/a \
                   -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
                   -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
                   -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
@@ -366,7 +366,7 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
 	          ]) {
 
 	            sh '''
-                 docker run -it -v $PWD:/a \
+                 docker run -i -v $PWD:/a \
                   -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
                   -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
                   -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
@@ -397,7 +397,7 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
 	          ]) {
 
 	            sh '''
-                 docker run -it -v $PWD:/a \
+                 docker run -i -v $PWD:/a \
                   -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
                   -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
                   -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
@@ -428,7 +428,7 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
 	          ]) {
 
 	            sh '''
-                 docker run -it -v $PWD:/a \
+                 docker run -i -v $PWD:/a \
                   -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
                   -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
                   -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
