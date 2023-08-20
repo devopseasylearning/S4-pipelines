@@ -287,13 +287,106 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
             }
         }
 
-        stage('build deployment image ') {
+
+
+
+    stage('build deployment image') {
+
+	      steps {
+	        script {
+	          withCredentials([
+	            string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+	            string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+	            string(credentialsId: 'passwd', variable: 'PASSWORD')
+	          ]) {
+
+	            sh '''
+rm -rf $WORKSPACE/TF/weather-app/Dockerfile
+cat <<EOF > $WORKSPACE/TF/weather-app/Dockerfile
+   FROM ubuntu:22.04
+   RUN  apt update 
+   WORKDIR /a
+   ENV AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+   ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+   ENV AWS_DEFAULT_REGION="us-west-2"
+   RUN apt install -y  curl software-properties-common wget vim unzip
+   RUN wget -O- https://apt.releases.hashicorp.com/gpg |  gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg 
+   RUN echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" |  tee /etc/apt/sources.list.d/hashicorp.list 
+   RUN  apt update &&  apt install terraform  -y
+   RUN terraform version 
+   CMD ["bash"] 
+EOF
+   docker build -t devopseasylearning/builder:latest .
+	            '''
+	          }
+
+	        }
+
+
+
+
+            agent {
+                docker {
+                    image 'devopseasylearning/builder:latest'  
+                    args '-v $WORKSPACE/TF/:/a'  
+                }
+            }
+
+
+   stage('terraform init' ) {
+            agent {
+                docker {
+                    image 'devopseasylearning/builder:latest'  
+                    args '-v $WORKSPACE/TF/:/a'  
+                }
+            }
+      
             steps {
                 script {
-                    // Log in to Docker Hub
+
                     sh '''
-                    cd $WORKSPACE/TF/weather-app/
-                    docker build -t devopseasylearning/builder:latest .
+                    terraform init
+                    
+                    '''
+                }
+            }
+        }
+
+
+   stage('terraform validate' ) {
+            agent {
+                docker {
+                    image 'devopseasylearning/builder:latest'  
+                    args '-v $WORKSPACE/TF/:/a'  
+                }
+            }
+      
+            steps {
+                script {
+
+                    sh '''
+                    terraform validate
+                    
+                    '''
+                }
+            }
+        }
+
+
+   stage('terraform plan' ) {
+            agent {
+                docker {
+                    image 'devopseasylearning/builder:latest'  
+                    args '-v $WORKSPACE/TF/:/a'  
+                }
+            }
+      
+            steps {
+                script {
+
+                    sh '''
+                    terraform plan
+                    
                     '''
                 }
             }
@@ -301,147 +394,57 @@ cat $WORKSPACE/TF/weather-app/docker-compose.yaml
 
 
 
-
-    stage('terraform init') {
-
-	      steps {
-	        script {
-	          withCredentials([
-	            string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
-	            string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
-	            string(credentialsId: 'passwd', variable: 'PASSWORD')
-	          ]) {
-
-	            sh '''
-                 docker run -i -v $WORKSPACE/TF/:/a \
-                  -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
-                  -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
-                  -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
-                    bash -c " terraform init"
-	            '''
-	          }
-
-	        }
-
-	      }
-
-	    }
-
-
-
-    stage('terraform validate') {
-
-	      steps {
-	        script {
-	          withCredentials([
-	            string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
-	            string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
-	            string(credentialsId: 'passwd', variable: 'PASSWORD')
-	          ]) {
-
-	            sh '''
-                 docker run -i -v $WORKSPACE/TF/:/a \
-                  -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
-                  -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
-                  -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
-                    bash -c " terraform validate"
-	            '''
-	          }
-
-	        }
-
-	      }
-
-	    }
-
-
-    stage('terraform plan') {
-
-	      steps {
-	        script {
-	          withCredentials([
-	            string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
-	            string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
-	            string(credentialsId: 'passwd', variable: 'PASSWORD')
-	          ]) {
-
-	            sh '''
-                 docker run -i -v $WORKSPACE/TF/:/a \
-                  -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
-                  -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
-                  -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
-                    bash -c " terraform plan"
-	            '''
-	          }
-
-	        }
-
-	      }
-
-	    }
-
-
-
-    stage('terraform apply') {
+   stage('terraform apply' ) {
+            agent {
+                docker {
+                    image 'devopseasylearning/builder:latest'  
+                    args '-v $WORKSPACE/TF/:/a'  
+                }
+            }
       when{  
             expression {
               STATE == 'DEPLOY' }
               }
+            steps {
+                script {
 
-	      steps {
-	        script {
-	          withCredentials([
-	            string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
-	            string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
-	            string(credentialsId: 'passwd', variable: 'PASSWORD')
-	          ]) {
-
-	            sh '''
-                 docker run -i -v $WORKSPACE/TF/:/a \
-                  -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
-                  -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
-                  -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
-                    bash -c " terraform init \
-                    terraform apply --auto-approve"
-	            '''
-	          }
-
-	        }
-
-	      }
-
-	    }
+                    sh '''
+                    terraform init
+                    terraform apply --auto-approve
+                    
+                    '''
+                }
+            }
+        }
 
 
-    stage('terraform destroy') {
+
+   stage('terraform destroy' ) {
       when{  
             expression {
               STATE == 'DESTROY' }
               }
+            agent {
+                docker {
+                    image 'devopseasylearning/builder:latest'  
+                    args '-v $WORKSPACE/TF/:/a'  
+                }
+            }
+      
+            steps {
+                script {
 
-	      steps {
-	        script {
-	          withCredentials([
-	            string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
-	            string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
-	            string(credentialsId: 'passwd', variable: 'PASSWORD')
-	          ]) {
+                    sh '''
+                    terraform init
+                    terraform destroy --auto-approve
+                    
+                    '''
+                }
+            }
+        }
 
-	            sh '''
-                 docker run -i -v $WORKSPACE/TF/:/a \
-                  -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
-                  -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS}" \
-                  -e AWS_DEFAULT_REGION="us-west-2"  devopseasylearning/builder:latest  \
-                    bash -c " terraform init \
-                    terraform destroy --auto-approve"
-	            '''
-	          }
+  
 
-	        }
-
-	      }
-
-	    }
 
    stage('wait for for readiness') {
       when{  
