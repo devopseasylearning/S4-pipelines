@@ -52,7 +52,7 @@ resource "aws_instance" "example" {
       inline = [
         "ls -l",
         "cd /home/ubuntu/weather-app",  
-        "cat docker-compose.yaml"
+        "cat docker-compose.yaml",
         "bash docker.sh"
       ]
   
