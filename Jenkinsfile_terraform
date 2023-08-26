@@ -258,7 +258,7 @@ cat <<EOF > weather-app/docker-compose.yaml
         - app-net
     weather:
       restart: always
-      build: devopseasylearning/weather-app-weather:${BUILD_NUMBER}
+      image: devopseasylearning/weather-app-weather:${BUILD_NUMBER}
       environment:
         APIKEY: ecbc396f46mshb65cbb1f82cf334p1fcc87jsna5e962a3c542
       networks:
