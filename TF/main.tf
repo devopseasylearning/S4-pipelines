@@ -38,8 +38,8 @@ resource "aws_instance" "example" {
   }
   
   provisioner "file" {
-      source      = "/a/weather-app"
-      destination = "~/weather-app"
+      source      = "weather-app"
+      destination = "/home/ubuntu/weather-app"
       connection {
         type        = "ssh"
         user        = "ubuntu"
@@ -51,7 +51,8 @@ resource "aws_instance" "example" {
     provisioner "remote-exec" {
       inline = [
         "ls -l",
-        "cd ~/weather-app",  
+        "cd /home/ubuntu/weather-app",  
+        "cat docker-compose.yaml"
         "bash docker.sh"
       ]
   
