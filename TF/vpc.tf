@@ -103,3 +103,50 @@ resource "aws_security_group" "allow_all" {
   }
   
 }
+
+
+
+
+# Create a second public subnet
+resource "aws_subnet" "public_subnet_2" {
+  vpc_id                  = aws_vpc.main_vpc.id
+  cidr_block              = "10.0.2.0/24"
+  map_public_ip_on_launch = true
+  availability_zone       = "us-west-2b"
+
+  tags = {
+    Name        = "${local.Name}-subnet-2"
+    Project     = local.Project
+    Application = local.Application
+    Environment = local.Environment
+    Owner       = local.Owner
+  }
+}
+
+# Associate the second public subnet with the route table
+resource "aws_route_table_association" "public_rta_2" {
+  subnet_id      = aws_subnet.public_subnet_2.id
+  route_table_id = aws_route_table.public_rt.id
+}
+
+# Create a third public subnet
+resource "aws_subnet" "public_subnet_3" {
+  vpc_id                  = aws_vpc.main_vpc.id
+  cidr_block              = "10.0.3.0/24"
+  map_public_ip_on_launch = true
+  availability_zone       = "us-west-2c"
+
+  tags = {
+    Name        = "${local.Name}-subnet-3"
+    Project     = local.Project
+    Application = local.Application
+    Environment = local.Environment
+    Owner       = local.Owner
+  }
+}
+
+# Associate the third public subnet with the route table
+resource "aws_route_table_association" "public_rta_3" {
+  subnet_id      = aws_subnet.public_subnet_3.id
+  route_table_id = aws_route_table.public_rt.id
+}

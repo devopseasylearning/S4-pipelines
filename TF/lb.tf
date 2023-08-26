@@ -38,7 +38,7 @@ resource "aws_lb_target_group" "example" {
     internal           = false
     load_balancer_type = "application"
     security_groups    = [aws_security_group.allow_all.id] # Security Group for ALB
-    subnets            = [aws_subnet.public_subnet.id]  # Specify your public subnet
+    subnets            = [aws_subnet.public_subnet.id,aws_subnet.public_subnet_2.id]  # Specify your public subnet
   
     enable_deletion_protection = false
   
