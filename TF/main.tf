@@ -29,6 +29,13 @@ resource "aws_instance" "example" {
         "ls -l",
         "rm -rf ~/weather-app || true"
       ]
+      connection {
+        type        = "ssh"
+        user        = "ubuntu"
+        private_key = file("/a/s4-session.pem")
+        host        = self.public_ip
+      }
+  }
   
   provisioner "file" {
       source      = "/a/weather-app"
