@@ -30,13 +30,6 @@ resource "aws_lb_target_group" "example" {
     target_id        = aws_instance.example.id
     port             = 3000
 
-    tags = {
-        Name        = local.Name
-        Project     = local.Project
-        Application = local.Application
-        Environment = local.Environment
-        Owner       = local.Owner
-      }
   }
 
   
