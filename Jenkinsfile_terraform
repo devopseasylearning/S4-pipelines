@@ -147,81 +147,6 @@ pipeline {
             }
         }
 
-
-
-
-
-        stage('construct compose') {
-           when{  
-            expression {
-              STATE == 'DEPLOY' }
-              }
-            steps {
-                script {
-                    // Log in to Docker Hub
-                    sh '''
-rm -rf $WORKSPACE/TF/weather-app/docker-compose.yaml
-cat <<EOF > $WORKSPACE/TF/weather-app/docker-compose.yaml
-  version: "3.9"
-  services:
-    auth:
-      restart: always
-      image: devopseasylearning/weather-app-auth:${BUILD_NUMBER}
-      depends_on:
-        - db
-      environment:
-        DB_HOST: db
-        DB_PASSWORD: my-secret-pw
-      networks:
-        - app-net
-    ui:
-      restart: always
-      image: devopseasylearning/weather-app-ui:${BUILD_NUMBER}
-      depends_on:
-        - auth
-        - weather
-      environment:
-        AUTH_HOST: auth
-        AUTH_PORT: 8080
-        WEATHER_HOST: weather
-        WEATHER_PORT: 5000
-      ports:
-        - "3000:3000"
-      networks:
-        - app-net
-    weather:
-      restart: always
-      build: devopseasylearning/weather-app-weather:${BUILD_NUMBER}
-      environment:
-        APIKEY: ecbc396f46mshb65cbb1f82cf334p1fcc87jsna5e962a3c542
-      networks:
-        - app-net
-    db:
-      restart: always
-      image: devopseasylearning/weather-app-db:${BUILD_NUMBER}
-      environment:
-        MYSQL_ROOT_PASSWORD: my-secret-pw
-      networks:
-        - app-net
-      volumes:
-        - ./db-data:/var/lib/mysql
-  
-  networks:
-    app-net:
-      driver: bridge
-  volumes:
-    db-data:
-
-EOF
-
-
-cat $WORKSPACE/TF/weather-app/docker-compose.yaml
-                    '''
-                }
-            }
-        }
-
-
     stage('build deployment image') {
 
 	      steps {
@@ -300,6 +225,61 @@ EOF
 
                     sh '''
                     cd TF
+                    ls -l
+                    ls -l weather-app
+rm -rf weather-app/docker-compose.yaml
+cat <<EOF > weather-app/docker-compose.yaml
+  version: "3.9"
+  services:
+    auth:
+      restart: always
+      image: devopseasylearning/weather-app-auth:${BUILD_NUMBER}
+      depends_on:
+        - db
+      environment:
+        DB_HOST: db
+        DB_PASSWORD: my-secret-pw
+      networks:
+        - app-net
+    ui:
+      restart: always
+      image: devopseasylearning/weather-app-ui:${BUILD_NUMBER}
+      depends_on:
+        - auth
+        - weather
+      environment:
+        AUTH_HOST: auth
+        AUTH_PORT: 8080
+        WEATHER_HOST: weather
+        WEATHER_PORT: 5000
+      ports:
+        - "3000:3000"
+      networks:
+        - app-net
+    weather:
+      restart: always
+      build: devopseasylearning/weather-app-weather:${BUILD_NUMBER}
+      environment:
+        APIKEY: ecbc396f46mshb65cbb1f82cf334p1fcc87jsna5e962a3c542
+      networks:
+        - app-net
+    db:
+      restart: always
+      image: devopseasylearning/weather-app-db:${BUILD_NUMBER}
+      environment:
+        MYSQL_ROOT_PASSWORD: my-secret-pw
+      networks:
+        - app-net
+      volumes:
+        - ./db-data:/var/lib/mysql
+  
+  networks:
+    app-net:
+      driver: bridge
+  volumes:
+    db-data:
+
+EOF
                     terraform init
                     terraform apply --auto-approve
                     
