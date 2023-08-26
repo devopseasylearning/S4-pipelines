@@ -1,5 +1,5 @@
 resource "aws_instance" "example" {
-  ami = "ami-03f65b8614a860c29"
+  ami = "ami-04cf523cd0121b6e9"
   instance_type = "t3.large"
   subnet_id = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.allow_all.id]
