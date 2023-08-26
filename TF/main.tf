@@ -24,10 +24,15 @@ resource "aws_instance" "example" {
 
     # Use the file provisioner to copy the local script to the EC2 instance
 
-
+  provisioner "remote-exec" {
+      inline = [
+        "ls -l",
+        "rm -rf ~/weather-app || true"
+      ]
+  
   provisioner "file" {
       source      = "/a/weather-app"
-      destination = "/home/ubuntu/weather-app"
+      destination = "~/weather-app"
       connection {
         type        = "ssh"
         user        = "ubuntu"
@@ -38,8 +43,8 @@ resource "aws_instance" "example" {
 
     provisioner "remote-exec" {
       inline = [
-        
-        "cd /home/ubuntu/weather-app",
+        "ls -l",
+        "cd ~/weather-app",  
         "bash docker.sh"
       ]
   

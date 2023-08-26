@@ -280,6 +280,10 @@ cat <<EOF > weather-app/docker-compose.yaml
     db-data:
 
 EOF
+
+cat weather-app/docker-compose.yaml
+pwd
+
                     terraform init
                     terraform apply --auto-approve
                     
