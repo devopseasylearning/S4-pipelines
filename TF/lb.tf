@@ -63,7 +63,7 @@ resource "aws_lb_target_group" "example" {
   resource "aws_security_group" "alb_sg" {
     name        = "alb-sg"
     description = "Allow inbound traffic to ALB"
-    vpc_id      = aws_vpc.example.id # specify the VPC ID
+    vpc_id      = aws_vpc.example.id 
   
     ingress {
       from_port   = 80
@@ -79,13 +79,6 @@ resource "aws_lb_target_group" "example" {
       cidr_blocks = ["0.0.0.0/0"]
     }
 
-    tags = {
-        Name        = local.Name
-        Project     = local.Project
-        Application = local.Application
-        Environment = local.Environment
-        Owner       = local.Owner
-      }
   }
   
 
